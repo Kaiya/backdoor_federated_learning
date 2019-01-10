@@ -659,11 +659,13 @@ if __name__ == '__main__':
                                                        'number_of_adversaries'])
             else:
                 subset_data_chunks = random.sample(participant_ids[1:], helper.params['no_models'])
-
+        ## multiple GPU support       
+#         model=nn.DataParallel(helper.local_model,device_ids=[0,1,2]) # multi-GPU
+        
         weight_accumulator = train(helper=helper, epoch=epoch,
                                    train_data_sets=[(pos, helper.train_data[pos]) for pos in
                                                     subset_data_chunks],
-                                   local_model=helper.local_model, target_model=helper.target_model,
+                                   local_model=nn.DataParallel(helper.local_model,device_ids=[0,1,2]), target_model=helper.target_model,
                                    is_poison=helper.params['is_poison'], last_weight_accumulator=weight_accumulator)
 
         # Average the models
